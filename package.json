@@ -1,8 +1,8 @@
 {
-  "name": "@sebasgoldberg/hardhat-network-alias",
+  "name": "@sebasgoldberg/hardhat-events-cache",
   "version": "0.0.1",
-  "description": "Hardhat plugin to use existing contract instances.",
-  "repository": "github:sebasgoldberg/hardhat-network-alias",
+  "description": "Hardhat plugin to save queryed events to a mongo database.",
+  "repository": "github:sebasgoldberg/hardhat-events-cache",
   "author": "Sebastian Goldberg",
   "license": "MIT",
   "main": "dist/src/index.js",
@@ -28,6 +28,7 @@
     "README.md"
   ],
   "devDependencies": {
+    "@sebasgoldberg/hardhat-mongodb": "file:../hardhat-mongodb",
     "@types/chai": "^4.1.7",
     "@types/fs-extra": "^5.0.4",
     "@types/mocha": "^5.2.6",
@@ -45,6 +46,8 @@
     "typescript": "^4.7.4"
   },
   "peerDependencies": {
-    "hardhat": "^2.0.0"
+    "hardhat": "^2.0.0",
+    "mongodb": "^4.8.1",
+    "@sebasgoldberg/hardhat-mongodb": "file:../hardhat-mongodb"
   }
 }

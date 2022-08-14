@@ -6,11 +6,8 @@ import "../../../src/index";
 const config: HardhatUserConfig = {
   solidity: "0.7.3",
   defaultNetwork: "hardhat",
-  networkAliases: {
-    'aave': {
-      'localhost': 'mainnet',
-      'hardhat': 'mainnet'
-    }
+  mongodb:{
+    dbName: 'hardhat-events-cache-plugin'
   }
 };
 

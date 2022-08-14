@@ -1,64 +1,43 @@
-# hardhat-network-alias
+# hardhat-events-cache
 
-This plug-in it is used to add network aliases, organizing the aliases by group.
+This plug-in it is used to add an events cache to hardhat.
 
-[Hardhat](https://hardhat.org) network alias plugin. 
+[Hardhat](https://hardhat.org) events cache plugin. 
 
 ## What
 
 This plugin will help you with:
-- I you want the configuration of one network to be applied in another network.
+- If you query events and you want to cache this results.
 
 ## Installation
 
 ```bash
-npm install @sebasgoldberg/hardhat-network-alias
+npm install @sebasgoldberg/hardhat-events-cache
 ```
 
 Import the plugin in your `hardhat.config.js`:
 
 ```js
-require("@sebasgoldberg/hardhat-network-alias");
+require("@sebasgoldberg/hardhat-events-cache");
 ```
 
 Or if you are using TypeScript, in your `hardhat.config.ts`:
 
 ```ts
-import "@sebasgoldberg/hardhat-network-alias";
+import "@sebasgoldberg/hardhat-events-cache";
 ```
 
 ## Environment extensions
 
-This plugin extends the Hardhat Runtime Environment by adding an `networkAlias` field.
+This plugin extends the Hardhat Runtime Environment by adding an `eventsCache` field.
 
-Here is an example to get the network name, considering the alias config.
+This `eventsCache` field has a `query` and `save` methods.
 
-``` typescript
-// ...
-this.hre.networkAlias.getNetworkName("aave")
-// ...
-```
+`query` it is used to query the cached events.
 
-For the configuration defined below, if it is runnning the `'hardhat'`, will be obtained the `'mainnet'` network.
-
-Please checkout the tests for further details.
-
+`save` it is used to save events to cache.
 
 ## Configuration
 
-In the following example it is configured the `'aave'` group.
+This plugin does not define own configuration, but uses [@sebasgoldberg/hardhat-mongodb](https://github.com/sebasgoldberg/hardhat-mongodb) plugin to obtain a mongodb db instance.
 
-For the `'aave'` group `'localhost'` and `'hardhat'` will be considered as `'mainnet'` network.
-
-``` typescript
-const config: HardhatUserConfig = {
-  // ...
-  networkAliases: {
-    'aave': {
-      'localhost': 'mainnet',
-      'hardhat': 'mainnet'
-    }
-  }
-  // ...
-}
-```

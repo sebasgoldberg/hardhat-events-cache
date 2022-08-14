@@ -1,7 +1,8 @@
 // tslint:disable-next-line no-implicit-dependencies
 import { assert } from "chai";
+import { ethers } from "ethers";
 import path from "path";
-import { NetworkAlias } from "../src/NetworkAlias";
+import { EventsCache } from "../src/EventsCache";
 
 
 import { useEnvironment } from "./helpers";
@@ -10,10 +11,10 @@ describe("Integration tests examples", function () {
     describe("Hardhat Runtime Environment extension", function () {
         useEnvironment("hardhat-project");
 
-        it("Should add the networkAlias field", function () {
+        it("Should add the eventsCache field", function () {
             assert.instanceOf(
-                this.hre.networkAlias,
-                NetworkAlias
+                this.hre.eventsCache,
+                EventsCache
             );
         });
 
@@ -22,38 +23,14 @@ describe("Integration tests examples", function () {
     describe("HardhatConfig extension", function () {
         useEnvironment("hardhat-project");
 
-        it("Should get the mainnet network name for aave group.", function () {
-            assert.equal(
-                this.hre.networkAlias.getNetworkName("aave"),
-                'mainnet'
-            )
-        });
-    });
-
-    describe("HardhatConfig extension", function () {
-        useEnvironment("hardhat-project");
-        it("Should throw exception when group name does not exists.", function () {
-            assert.throws(() => {
-                this.hre.networkAlias.getNetworkName("aave2")
-            })
-        });
-    });
-
-    describe("HardhatConfig extension", function () {
-        useEnvironment("no-hardhat-alias");
-        it("Should return the actual network name, when no mapping is found.", function () {
-            assert.equal(
-                this.hre.networkAlias.getNetworkName("aave"),
-                'hardhat'
-            )
-        });
-    });
-
-    describe("HardhatConfig extension", function () {
-        useEnvironment("circular-reference");
-        it("Should throw exception when exists circular reference in config.", function () {
-            assert.throws(() => {
-                this.hre.networkAlias.getNetworkName("aave")
+        it("Should not get events, and return the queried interval as nonCached.", async function () {
+            const result = await this.hre.eventsCache.query({address: ethers.constants.AddressZero, topics: [ ]}, 10, 20)
+            assert.deepEqual(result, {
+                events: [],
+                intervals: {
+                    cached: [],
+                    nonCached: [{from: 10, to: 20}]
+                }
             })
         });
     });
