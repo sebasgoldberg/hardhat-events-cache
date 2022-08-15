@@ -24,6 +24,8 @@ interface IQueryResult {
     intervals: IQueryIntervals
 }
 
+export const COLLECTION_PREFIX = 'hardhat-events-cache-plugin:'
+
 export class EventsCache{
 
     constructor(protected hre: HardhatRuntimeEnvironment){
@@ -39,14 +41,14 @@ export class EventsCache{
     }
 
     protected getEventCollectionName(eventFilter: EventFilter): string{
-        return `${this.getNetworkName()}:${eventFilter.address}:${eventFilter.topics?.flat().join('.')}`
+        return `${COLLECTION_PREFIX}${this.getNetworkName()}:${eventFilter.address}:${eventFilter.topics?.flat().join('.')}`
     }
 
     /**
      * Retuns the block intervals for the saved events.
      */
      protected async getBlocksIntervalsCollection(eventFilter: EventFilter): Promise<Collection<IBlocknumberInterval>>{
-        const blocksIntervalsCollectionName = `${this.getEventCollectionName(eventFilter)}.blocksIntervals`
+        const blocksIntervalsCollectionName = `${COLLECTION_PREFIX}${this.getEventCollectionName(eventFilter)}.blocksIntervals`
         return (await this.getDb()).collection<IBlocknumberInterval>(blocksIntervalsCollectionName)
     }
 
@@ -165,7 +167,12 @@ export class EventsCache{
 
         await Promise.all([
 
-            collection.deleteMany(intersections.map( i => ({ _id: i._id }))),
+
+            intersections.length > 0 ?
+                collection.deleteMany({
+                    $or: intersections.map( i => ({ _id: i._id })) 
+                })
+                : Promise.resolve(),
 
             collection.insertOne(union),
     
@@ -195,6 +202,20 @@ export class EventsCache{
 
         ])
     
+    }
+
+    async clear(): Promise<void>{
+
+        const db = await this.getDb()
+
+        const collections = db.listCollections()
+
+        for await (const c of collections){
+            if (!c.name.includes(COLLECTION_PREFIX))
+                continue
+            await db.dropCollection(c.name)
+        }
+
     }
    
 }
