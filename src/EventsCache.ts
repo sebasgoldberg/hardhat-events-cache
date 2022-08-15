@@ -184,23 +184,39 @@ export class EventsCache{
         
         const collection = await this.getEventCollection(eventFilter)
 
-        await Promise.all([
+        const client = this.hre.mongodb.getClient()
 
-            collection.bulkWrite(events.map( event => ({
-                updateOne: {
-                    filter: { $and: [ 
-                        { blockNumber: event.blockNumber },
-                        { transactionIndex: event.transactionIndex },
-                        { logIndex: event.logIndex },
-                    ] },
-                    update: { $set: event },
-                    upsert: true,
-                }
-            }))),
+        const session = client.startSession()
 
-            this.addInterval(eventFilter, fromBlock, toBlock)
+        try {
 
-        ])
+            await session.withTransaction(() =>
+                Promise.all([
+
+                    collection.bulkWrite(events.map( event => ({
+                        updateOne: {
+                            filter: { $and: [ 
+                                { blockNumber: event.blockNumber },
+                                { transactionIndex: event.transactionIndex },
+                                { logIndex: event.logIndex },
+                            ] },
+                            update: { $set: event },
+                            upsert: true,
+                        }
+                    }))),
+        
+                    this.addInterval(eventFilter, fromBlock, toBlock)
+        
+                ])
+            )
+
+        } finally {
+            
+            await session.endSession()
+
+        }
+
+        
     
     }
 
