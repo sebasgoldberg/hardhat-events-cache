@@ -181,6 +181,12 @@ export class EventsCache{
     }
 
     async save(eventFilter: EventFilter, fromBlock: number, toBlock: number, events: Array<IEvent>): Promise<void>{
+
+        events.forEach( e => {
+            if (e.blockNumber < fromBlock || e.blockNumber > toBlock)
+                throw new HardhatPluginError('hardhat-events-cache', 
+                    `Block number ${e.blockNumber} is outside the specified range [${fromBlock}, ${toBlock}]`)
+        } )
         
         const collection = await this.getEventCollection(eventFilter)
 

@@ -10,16 +10,12 @@ declare module "mocha" {
 
 export function useEnvironment(fixtureProjectName: string) {
 
-  before(async function () {
+  beforeEach("Loading hardhat environment", async function () {
     process.chdir(path.join(__dirname, "fixture-projects", fixtureProjectName));
+
     this.hre = require("hardhat");
     await this.hre.eventsCache.clear()
-  })
 
-  beforeEach("Loading hardhat environment", function () {
-    process.chdir(path.join(__dirname, "fixture-projects", fixtureProjectName));
-
-    this.hre = require("hardhat");
   });
 
   afterEach("Resetting hardhat", function () {
