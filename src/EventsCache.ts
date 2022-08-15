@@ -3,7 +3,7 @@ import { HardhatPluginError } from 'hardhat/plugins';
 import { Collection, Db } from "mongodb";
 import { EventFilter, Event } from "ethers"
 
-interface IEvent {
+export interface IEvent {
     blockNumber: number,
     transactionIndex: number;
     logIndex: number;
@@ -199,17 +199,19 @@ export class EventsCache{
             await session.withTransaction(() =>
                 Promise.all([
 
-                    collection.bulkWrite(events.map( event => ({
-                        updateOne: {
-                            filter: { $and: [ 
-                                { blockNumber: event.blockNumber },
-                                { transactionIndex: event.transactionIndex },
-                                { logIndex: event.logIndex },
-                            ] },
-                            update: { $set: event },
-                            upsert: true,
-                        }
-                    }))),
+                    events.length>0 ?
+                        collection.bulkWrite(events.map( event => ({
+                            updateOne: {
+                                filter: { $and: [ 
+                                    { blockNumber: event.blockNumber },
+                                    { transactionIndex: event.transactionIndex },
+                                    { logIndex: event.logIndex },
+                                ] },
+                                update: { $set: event },
+                                upsert: true,
+                            }
+                        })))
+                        : Promise.resolve(),
         
                     this.addInterval(eventFilter, fromBlock, toBlock)
         
