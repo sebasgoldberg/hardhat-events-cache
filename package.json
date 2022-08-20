@@ -1,6 +1,6 @@
 {
   "name": "@sebasgoldberg/hardhat-events-cache",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hardhat plugin to save queryed events to a mongo database.",
   "repository": "github:sebasgoldberg/hardhat-events-cache",
   "author": "Sebastian Goldberg",
